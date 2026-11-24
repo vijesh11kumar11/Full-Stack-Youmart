@@ -1377,3 +1377,78 @@ for (const name of ['Party Masks', 'Candles', 'Balloon Sets', 'Balloon Arches', 
   PARTY_RULES[name] = [...PARTY_STRAYS, ...(PARTY_RULES[name] ?? [])];
 }
 for (const [name, rules] of Object.entries(PARTY_RULES)) REROUTES[name] = [...rules, ...(REROUTES[name] ?? [])];
+
+// --- toys delivery -------------------------------------------------------------------------------
+// "Baby Toys" / "Bath Toys" sit in two menus (Toys & Games > Baby & Bath Toys and Baby Care > Baby
+// Toys): filed under Toys, listed in Baby Care too - rattles / teethers / musical / activity toys
+// also land in Baby Care's own sub-menus. Real-world items under toy names (knife sets under
+// "Kitchen Sets", gamepads under "Games Accessories", motorcycle covers under "Scooters", facial kits
+// under "Magic Kits"...) go to their own categories; medical apparel and engine oil are skipped
+// (no category for them in the app).
+const TOY_WORDS = 'toy|kids|kid\'s|children|child|play|pretend|role play|baby|girls|boys|doll';
+const TB = 'Toys & Games › Baby & Bath Toys';
+const BC = 'Baby Care › Baby Toys';
+const TOY_STRAYS = [
+  [P('models & educational materials'), 'Toys & Games › Educational & Building Toys › Learning Kits'],
+  [P('professional medical supplies > .*aprons'), 'Home Furnishing › Aprons › Aprons'],
+  [P('professional medical supplies|surgical gowns|overalls & coveralls|engine oils'), SKIP],
+  [P('keyrings'), 'Keychains'],
+  [P('home & d[ée]cor > .*(idols & figurines|figurines)', TOY_WORDS), DECOR],
+  [P('garden figurines'), 'Agri and Gardening › Garden Decor › Garden Statues'],
+  [P('tyre inflators'), 'Auto Accessories › Tyre Accessories › Inflators'],
+  [P('breakdown assistance'), 'Auto Accessories › Tool Kits › Emergency Tool Kits'],
+  [P('motorcycle covers|tilts & protective sheets'), 'Auto Accessories › Bike Accessories › Bike Covers'],
+  [P('registration plate holders'), 'Auto Accessories › Car Exterior Accessories › Number Plate Frames'],
+  [P('dashboard & trim care|car & motorbike care > .*cleaning kits'), 'Auto Accessories › Car Care › Car Cleaning'],
+  [P('pet supplies > dogs > .*interactive toys|pet supplies > cats'), 'Pet Supplies › Pet Toys › Interactive Toys'],
+  [P('fish & aquatics'), 'Aquarium Accessories'],
+  [P('bath bombs'), 'Cosmetics › Body Care › Body Care'],
+  [P('bath mats'), 'Bath Mats'],
+  [P('bath towels'), 'Home Furnishing › Towels › Bath Towels'],
+  [P('skin care > .*facial kit'), 'Cosmetics › Skin Care › Face Masks'],
+  [P('make-up kits'), 'Makeup'],
+  [P('school supplies > .*pencil cases'), 'Stationary › School Supplies › Pencil Cases'],
+  [P('office paper products > .*diaries'), 'Stationary › Notebooks › Diaries'],
+  [P('crochet kits'), 'Arts and Crafts › Craft Kits › Kids Craft Kits'],
+  [P('hand & wrist braces'), 'Fitness Accessories'],
+  // Gaming gear filed as a toy "accessory".
+  [P('gamepads|controllers'), 'Electronics › Gaming Accessories › Controllers'],
+  [P('gaming mice'), 'Electronics › Gaming Accessories › Gaming Mouse'],
+  [P('gaming keyboards'), 'Electronics › Gaming Accessories › Gaming Keyboards'],
+  [P('computers & accessories > .*headsets'), 'Electronics › Gaming Accessories › Gaming Headsets'],
+  [P('video games|mobiles & accessories > .*(triggers|finger sleeves)'), 'Electronics › Gaming Accessories › Gaming Accessories'],
+  // Real kitchenware (not play sets).
+  [P('kitchen & dining > .*spice jars', TOY_WORDS), 'Kitchenware › Plastic Household › Spice Containers'],
+  [P('kitchen & dining > .*jars & containers', TOY_WORDS), 'Kitchenware › Storage Containers › Food Storage Jars'],
+  [P('kitchen & dining > .*knife sets', TOY_WORDS), 'Kitchenware › Knives › Kitchen Knife Sets'],
+  [P('kitchen & dining > .*pot & pan sets', TOY_WORDS), 'Kitchenware › Cookware › Pots'],
+  [P('kitchen & dining > .*casseroles', TOY_WORDS), 'Kitchenware › Crockery › Casseroles'],
+  [P('kitchen & dining > .*spatulas', TOY_WORDS), 'Kitchenware › Kitchen Tools › Spatulas'],
+  [P('kitchen & dining > .*mixing bowls', TOY_WORDS), 'Kitchenware › Crockery › Serving Bowls'],
+  [P('kitchen & dining > .*bottles', TOY_WORDS), 'Kitchenware › Plastic Household › Water Bottles'],
+  [P('kitchen & dining', TOY_WORDS), 'Kitchenware › Kitchen Tools'],
+  [P('soft toys > .*stuffed animals'), 'Toys & Games › Soft Toys › Soft Toys'],
+];
+const TOY_RULES = {
+  'Baby Toys': [
+    ...TOY_STRAYS,
+    [P('teethers'), `${BC} › Teethers`, [`${TB} › Baby Toys`]],
+    [P('rattles'), `${BC} › Rattles`, [`${TB} › Baby Toys`]],
+    [P('sound toys|musical'), `${BC} › Musical Toys`, [`${TB} › Baby Toys`]],
+    [P('playmats|floor gyms|activity cubes|early development|activity & play'), `${BC} › Activity Toys`, [`${TB} › Baby Toys`]],
+    [P('bath toys'), `${TB} › Bath Toys`, [`${BC} › Bath Toys`]],
+    [/./, `${TB} › Baby Toys`, [`${BC} › Baby Toys`]],
+  ],
+  'Bath Toys': [...TOY_STRAYS, [/./, `${TB} › Bath Toys`, [`${BC} › Bath Toys`]]],
+};
+for (const name of [
+  'Art & Craft Toys', 'Building Blocks', 'Toy Trains', 'Scooters', 'Fashion Dolls', 'Card Games',
+  'Toy Trucks', 'Construction Vehicles', 'Learning Kits', 'Slime & Putty', 'Die-Cast Cars',
+  'Learning Toys', 'Games Accessories', 'Sports Toys', 'Tricycles', 'Educational Games', 'Playhouses',
+  'Pretend Play', 'Family Games', 'STEM Toys', 'Magic Kits', 'Puzzles', 'Montessori Toys',
+  'Strategy Games', 'Kitchen Sets', 'Doctor Sets', 'Remote Control Toys', 'Toy Bikes', 'Doll Houses',
+  'Party Games', 'Construction Sets', 'Ride Ons',
+]) {
+  TOY_RULES[name] = [...TOY_STRAYS, ...(TOY_RULES[name] ?? [])];
+}
+for (const [name, rules] of Object.entries(TOY_RULES)) REROUTES[name] = [...rules, ...(REROUTES[name] ?? [])];
