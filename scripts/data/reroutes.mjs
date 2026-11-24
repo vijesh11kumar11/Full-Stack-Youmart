@@ -1452,3 +1452,57 @@ for (const name of [
   TOY_RULES[name] = [...TOY_STRAYS, ...(TOY_RULES[name] ?? [])];
 }
 for (const [name, rules] of Object.entries(TOY_RULES)) REROUTES[name] = [...rules, ...(REROUTES[name] ?? [])];
+
+// --- travel delivery -----------------------------------------------------------------------------
+// "Water Bottles" sits in two menus (Travel & Accessories > Travel Bottles and Kitchenware > Plastic
+// Household): filed under Travel, listed in Kitchenware too. Non-travel items under travel names
+// (skincare masks under "Eye Masks", garden hoses / sink aerators under "Universal Adapters",
+// padlocks under "Travel Locks", grow bags under "Laptop Bags", bungee cords under "Luggage
+// Straps"...) go to their own categories. Kitchen rules match the LAST path step only: water
+// bottles sit under "Kitchen Storage & Containers > Water Bottles" and must not count as containers.
+const TRAVEL_STRAYS = [
+  [P('skin care > .*(eye creams|eye serums)'), 'Cosmetics › Skin Care › Serums'],
+  [P('skin care > .*(masks|face masks|wrinkle patches)'), 'Cosmetics › Skin Care › Face Masks'],
+  [P('dress up & pretend play > .*masks'), 'Party Decorations › Party Decoration Kits › Party Masks'],
+  [P('motorbike accessories & parts > .*face masks'), 'Bike Riding Gear'],
+  [P('hose parts & connectors'), 'Agri and Gardening › Irrigation Equipment › Hose Connectors'],
+  [P('large appliances > .*hoses|washer parts'), 'Agri and Gardening › Gardening Tools › Garden Hoses'],
+  [P('kitchen sink aerators'), 'Bath Fittings › Taps & Faucets › Pillar Taps'],
+  [P('home improvement > electrical > .*(plug adapters|multi-outlets|adapters & multi-outlets)'), 'Electrical and Lights › Extension Boards › Adapters', ['Travel & Accessories › Travel Accessories › Universal Adapters']],
+  [P('usb cables'), 'Electronics › Mobile Accessories › Cables'],
+  [P('flashlights'), 'Electrical and Lights › Emergency Lights › Torch Lights'],
+  [P('cosmetic bags|make-up pouches|toiletry kits'), 'Travel & Accessories › Travel Organizers › Toiletry Bags'],
+  [P('watch boxes'), 'Wall Clock & Watches › Watch Accessories › Watch Boxes'],
+  [P('school supplies > .*pencil cases'), 'Stationary › School Supplies › Pencil Cases'],
+  [P('plant bags'), 'Agri and Gardening › Pots & Planters › Grow Bags'],
+  [P('padlocks'), 'Hardwares › Door Locks › Padlocks', ['Travel & Accessories › Luggage Accessories › Travel Locks']],
+  [P('helmet locks'), 'Auto Accessories › Bike Accessories › Helmet Accessories'],
+  [P('bungee cords|ratcheting|tie-downs'), 'Hardwares › Ropes & Chains › Nylon Ropes'],
+  [P('office supplies > .*(tags & tickets|key tags|pricemarker labels)'), 'Stationary › Office Supplies › Labels'],
+  [P('produce storage bags'), 'Kitchenware › Kitchen Organizers › Kitchen Organizers'],
+  [P('spice racks'), 'Kitchenware › Kitchen Organizers › Kitchen Organizers'],
+  [P('bathroom shelves'), 'Bath Fittings › Bathroom Accessories › Bathroom Shelves'],
+  [P('baby > nursery > .*blankets'), 'Baby Care › Baby Bedding › Baby Blankets', ['Travel & Accessories › Travel Comfort › Travel Blankets']],
+  [P('home furnishing > .*comforters'), 'Home Furnishing › Blankets › Comforters'],
+  [P('sippy cups|baby > feeding > .*food storage'), 'Baby Care › Baby Feeding Bottles › Feeding Bottles'],
+  [P('kitchen & dining > .*> tumblers$'), 'Kitchenware › Crockery › Tumblers'],
+  [P('kitchen & dining > .*> lunch boxes$'), 'Kitchenware › Storage Containers › Lunch Boxes', ['Travel & Accessories › Travel Bottles › Travel Containers']],
+  [P('kitchen & dining > .*> (jars & containers|containers)$'), 'Kitchenware › Storage Containers › Food Storage Jars', ['Travel & Accessories › Travel Bottles › Travel Containers']],
+];
+const TRAVEL_RULES = {
+  'Water Bottles': [
+    ...TRAVEL_STRAYS,
+    [P('kitchen & dining|school supplies'), 'Travel & Accessories › Travel Bottles › Water Bottles', ['Kitchenware › Plastic Household › Water Bottles']],
+    [/./, 'Travel & Accessories › Travel Bottles › Water Bottles'],
+  ],
+};
+for (const name of [
+  'Passport Organizers', 'Eye Masks', 'Shoe Bags', 'Travel Blankets', 'Trolley Bags', 'Garment Bags',
+  'Sling Bags', 'Universal Adapters', 'Backpacks', 'Travel Chargers', 'Hard Shell', 'Travel Containers',
+  'Soft Luggage', 'Cabin Luggage', 'Luggage Tags', 'Laptop Bags', 'Travel Locks', 'Check-in Luggage',
+  'Toiletry Bags', 'Packing Cubes', 'Luggage Straps', 'Travel Wallets', 'Passport Holders',
+  'Duffel Bags', 'Toiletry Bottles', 'Power Banks', 'RFID Passport Covers',
+]) {
+  TRAVEL_RULES[name] = [...TRAVEL_STRAYS, ...(TRAVEL_RULES[name] ?? [])];
+}
+for (const [name, rules] of Object.entries(TRAVEL_RULES)) REROUTES[name] = [...rules, ...(REROUTES[name] ?? [])];
