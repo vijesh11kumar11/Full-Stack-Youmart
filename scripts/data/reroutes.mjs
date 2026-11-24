@@ -1083,6 +1083,80 @@ const GIFT_RULES = {
 };
 for (const [name, rules] of Object.entries(GIFT_RULES)) REROUTES[name] = [...rules, ...(REROUTES[name] ?? [])];
 
+// --- pet / music / car + garden deliveries --------------------------------------------------------
+// Generic names catch other shelves: "Pumps" (women's shoes), "Stainless Steel Bowls" (katori sets),
+// "Electronic Drums" (printer drum units), "Picks" (toothpicks), "Stands" (plant / kitchen stands)...
+// Moved by Amazon PATH; a pet-word title keeps a pet product where it was filed.
+const PET_TITLE = 'dog|cat\\b|cats\\b|kitten|puppy|\\bpets?\\b|bird|parrot|fish|aquarium';
+const TOY_INSTRUMENTS = [[P('musical toy instruments'), 'Toys & Games › Musical Toys › Musical Toys']];
+const DECOR = 'Gifts & Frames › Decorative Showpieces › Decorative Showpieces';
+const PMM_RULES = {
+  // pet
+  'Stainless Steel Bowls': [[P('tableware|kitchen & dining', PET_TITLE), 'Kitchenware › Stainless Steel › Stainless Steel Utensils']],
+  'Nail Clippers': [[P('beauty|personal care|medical', PET_TITLE), 'Nail Care']],
+  Pumps: [[P('> shoes'), "Women's Heels"]],
+  Heaters: [
+    [P('water heaters|geysers'), 'Home Appliances › Water Heaters › Geysers'],
+    [P('room heaters|heating, cooling'), 'Home Appliances › Room Heaters › Room Heaters'],
+    [P('shaving, waxing'), 'Cosmetics › Grooming › Grooming'],
+  ],
+  Filters: [
+    [P('water purifiers|water filtration|bathroom fixtures'), 'Home Appliances › Water Purifiers'],
+    [P('large appliances'), 'Home Appliances › Washing Machines › Washing Machines'],
+    [P('coffee, tea'), 'Kitchenware › Kitchen Tools'],
+    [P('motorbike|car & motorbike'), 'Auto Accessories › Bike Accessories'],
+  ],
+  'ID Tags': [
+    [P('luggage accessories', PET_TITLE), 'Luggage Tags'],
+    [P('keyrings', PET_TITLE), 'Keychains'],
+    [P('identification badges', PET_TITLE), 'Stationary › Office Supplies › Office Supplies'],
+    [P('labels, index', PET_TITLE), 'Stationary › Office Supplies › Labels'],
+  ],
+  'Interactive Toys': [[P('toys & games', PET_TITLE), 'Toys & Games › Educational & Building Toys › Learning Toys']],
+  'Bird Toys': [[P('stuffed animals|soft toys', PET_TITLE), 'Toys & Games › Soft Toys › Soft Toys']],
+  'Cat Toys': [[P('stuffed animals|soft toys', PET_TITLE), 'Toys & Games › Soft Toys › Soft Toys']],
+  Harnesses: [[P('baby safety'), 'Baby Care › Baby Safety']],
+  'Dog Kennels': [[P('household cleaners'), 'Disinfectants']],
+  'pet Grooming Kits': [[/./, 'Pet Supplies › Pet Grooming › Grooming Kits']],
+  // music
+  Cables: [[P('computers & accessories|mobiles & accessories|cord management'), 'Electronics › Mobile Accessories › Cables']],
+  Amplifiers: [[P('car electronics'), 'Auto Accessories › Car Accessories › Car Accessories']],
+  'Electronic Drums': [...TOY_INSTRUMENTS, [P('printers'), 'Electronics › Printers › Printers']],
+  Picks: [[P('kitchen & dining'), 'Kitchenware › Kitchen Tools'], [P('oral care'), undefined]],
+  Tabla: [...TOY_INSTRUMENTS, [P('home & d.cor'), DECOR]],
+  Harmoniums: [...TOY_INSTRUMENTS, [P('home & d.cor'), DECOR]],
+  Stands: [
+    [P('plant containers|gardening'), 'Agri and Gardening › Plant Stands › Plant Stands'],
+    [P('kitchen & dining'), 'Kitchenware › Kitchen Organizers › Kitchen Organizers'],
+    [P('large appliances'), 'Home Appliances › Washing Machines › Washing Machines'],
+    [P('home fragrance|decorative'), DECOR],
+    [P('laptop|monitor accessories|tablet accessories'), 'Laptop Stands'],
+    [P('cameras & photography|photo & video|mobile accessories > (mounts|stands)'), 'Camera Accessories'],
+    [P('bathroom hardware|bathroom accessories'), 'Bath Fittings › Bathroom Accessories'],
+    [P('office supplies|office paper products'), 'Stationary › Office Supplies › Office Supplies'],
+    [P('motorbike|cycling'), 'Auto Accessories › Bike Accessories'],
+  ],
+  'Keyboard Stands': [[P('keyboards, mice'), 'Electronics › Computer Accessories › Keyboards'], [P('laptop'), 'Laptop Stands']],
+  'Instrument Cases': [[P('pencil cases'), 'Stationary › School Supplies › Pencil Cases']],
+  // car + garden ("match")
+  'Tool Boxes': [
+    [P('car & motorbike|cycling'), 'Auto Accessories › Tool Kits › Tool Boxes', ['Tools › Tool Boxes & Organizers › Tool Boxes']],
+    [/./, 'Tools › Tool Boxes & Organizers › Tool Boxes', ['Auto Accessories › Tool Kits › Tool Boxes']],
+  ],
+  'Plant Stands': [[/./, 'Agri and Gardening › Plant Stands › Plant Stands', ['Artificial Flowers and Plants › Plant Stands › Plant Stands']]],
+  'Seat Cushions': [[P('home & kitchen > furniture'), 'Home Furnishing › Cushions & Pillows › Cushions']],
+  Cultivators: [[P('hair colou?r'), undefined]],
+  Shovels: [[P('sweeping'), 'Dustpans'], [P('kitchen & dining'), 'Kitchenware › Kitchen Tools']],
+  Sprayers: [[P('kitchen & dining'), 'Kitchenware › Kitchen Tools']],
+  Rakes: [[P('pet supplies'), 'Pet Supplies › Pet Grooming › Pet Brushes'], [P('hair'), undefined]],
+  'USB Chargers': [[P('mobiles & accessories|computers & accessories'), 'Electronics › Mobile Accessories › Chargers']],
+  'Garden Ornaments': [[P('aquarium'), 'Aquarium Accessories']],
+};
+for (const name of ['Pianos', 'Drum Sets', 'Percussion Instruments', 'Digital Pianos', 'Classical Guitars', 'Acoustic Guitars', 'Mouth Organs', 'Ukuleles', 'Violins', 'Microphones', 'Karaoke Machines']) {
+  PMM_RULES[name] = [...TOY_INSTRUMENTS, ...(PMM_RULES[name] ?? [])];
+}
+for (const [name, rules] of Object.entries(PMM_RULES)) REROUTES[name] = [...rules, ...(REROUTES[name] ?? [])];
+
 /** Storefront slug of the Baby Care main category. */
 const BABY_ROOT = 'baby-care';
 
@@ -1206,3 +1280,100 @@ export function routeProduct(targetName, title, categoryPath, rootOf) {
   }
   return { name: targetName };
 }
+
+// --- party delivery ------------------------------------------------------------------------------
+// "Party Hats", "Ribbons" and "Table Decorations" sit in two app menus: filed once, listed on both.
+// Strays are moved by Amazon PATH (caps, hair clips, surgical masks, table lamps...).
+const PB = 'Party Decorations › Birthday Decorations';
+const P_HATS = ['Party Decorations › Party Decoration Kits › Party Hats', [`${PB} › Party Hats`]];
+const P_TABLE = ['Party Decorations › Party Tableware › Table Decorations', ['Party Decorations › Wedding Decorations › Table Decorations']];
+const P_RIBBON = 'Party Decorations › Backdrop Decorations › Ribbons';
+const HAIR = [
+  [P('ponytail holders|> clips'), 'Fashion Jewellery › Hair Accessories › Hair Clips'],
+  [P('> bands|headbands'), 'Fashion Jewellery › Hair Accessories › Hair Bands'],
+];
+const PARTY_STRAYS = [
+  // No app category for medical items.
+  [P('surgical masks|procedure masks|cloth face masks|menstrual cups|catheters'), SKIP],
+  [P('beauty > skin care > face masks'), 'Cosmetics › Skin Care › Face Masks'],
+  [P('eye masks|sleep masks'), 'Travel & Accessories › Travel Comfort › Eye Masks'],
+  [P('balaclavas|motorbike accessories & parts > .*face masks'), 'Bike Riding Gear'],
+  [P('brooches'), 'Fashion Jewellery › Brooches › Brooches'],
+  [P('gymnastics'), 'Fitness Accessories'],
+  [P('printer ribbons'), 'Electronics › Printers › Printers'],
+  [P('table runners'), 'Home Furnishing › Table Linen › Table Runners'],
+  [P('table cloths'), 'Home Furnishing › Table Linen › Table Cloths'],
+  [P('table lamps'), 'Electrical and Lights › Decorative Lights › Table Lamps'],
+  [P('night lights'), 'Electrical and Lights › Decorative Lights › Night Lamps'],
+  [P('led bulbs'), 'Electrical and Lights › LED Bulbs › LED Bulbs'],
+  [P('end tables'), 'Furniture › Tables › Side Tables'],
+  [P('wall hooks'), 'Hardwares › Door & Cabinet Handles › Hooks'],
+  [P('gardening > flower pots'), 'Agri and Gardening › Pots & Planters › Pots & Planters'],
+  [P('gardening > plant stands'), 'Agri and Gardening › Plant Stands › Plant Stands', ['Artificial Flowers and Plants › Plant Stands › Plant Stands']],
+  [P('keyrings'), 'Keychains'],
+  [P('pencil cases'), 'Stationary › School Supplies › Pencil Cases'],
+  [P('sling & cross-body'), 'Travel & Accessories › Travel Bags › Sling Bags'],
+  [P('laptop messenger'), 'Travel & Accessories › Travel Bags › Laptop Bags'],
+  [P('water cartridges'), 'Water Purifiers'],
+  [P('gas lighters|pressers & mashers|whisks|cake sculpting|chocolate moulds|baking tools|disposable coffee filters|reusable baking cups'), 'Kitchenware › Kitchen Tools'],
+  [P('nail polish'), 'Cosmetics › Makeup › Nail Polish'],
+  [P('car parts'), 'Auto Accessories › Car Accessories › Car Accessories'],
+  [P('idols & figurines', 'cake|topper'), DECOR],
+];
+const CLOTH_HATS = [
+  [P('clothing & accessories > (men|women|boys|girls)'), 'Clothing › Accessories › Hats'],
+  [P('clothing & accessories > baby'), 'Clothing › Accessories › Caps'],
+];
+const PARTY_RULES = {
+  'Party Hats': [...PARTY_STRAYS, ...CLOTH_HATS, ...HAIR, [/./, ...P_HATS]],
+  Ribbons: [
+    ...PARTY_STRAYS,
+    ...HAIR,
+    [P('christmas trees|tree decorations'), 'Party Decorations › Festival Decorations › Christmas Decorations'],
+    [P('diyas'), 'Party Decorations › Festival Decorations › Diwali Decorations'],
+    [P('craft materials > .*ribbons'), P_RIBBON, ['Clothing › Clothing Accessories › Ribbons']],
+    [/./, P_RIBBON],
+  ],
+  'Table Decorations': [
+    ...PARTY_STRAYS,
+    [P('vases'), 'Artificial Flowers and Plants › Flower Vases › Decorative Vases', [P_TABLE[0]]],
+    [/./, ...P_TABLE],
+  ],
+  'Disposable Cups': [
+    ...PARTY_STRAYS,
+    [/^[^|]*\bpaper\b.*\| [^|]*(cups|drinkware)/, 'Party Decorations › Party Tableware › Disposable Cups', ['Kitchenware › Disposable Items › Paper Cups']],
+    [/^[^|]*plastic.*\| [^|]*(cups|drinkware|glasses|tumblers)/, 'Party Decorations › Party Tableware › Disposable Cups', ['Kitchenware › Disposable Items › Plastic Cups']],
+    [/^[^|]*plate/, 'Party Decorations › Party Tableware › Disposable Plates'],
+    [/^[^|]*(paper|disposable|areca|leaf|bagasse)[^|]*bowl|^[^|]*bowl[^|]*(paper|disposable|areca|leaf|bagasse)/, 'Kitchenware › Disposable Items › Paper Bowls'],
+    [P('bowls'), 'Kitchenware › Crockery › Serving Bowls'],
+    [P('coffee cups & mugs', 'disposable|paper'), 'Kitchenware › Crockery › Coffee Mugs'],
+    [P('water & juice glasses', 'disposable|plastic'), 'Kitchenware › Crockery › Glassware'],
+    [P('tumblers', 'disposable|plastic'), 'Kitchenware › Crockery › Tumblers'],
+  ],
+  'Disposable Plates': [
+    ...PARTY_STRAYS,
+    [/^[^|]*(paper|areca|leaf|bagasse|palm|eco|biodegradable)/, 'Party Decorations › Party Tableware › Disposable Plates', ['Kitchenware › Disposable Items › Paper Plates']],
+    [/^[^|]*plastic/, 'Party Decorations › Party Tableware › Disposable Plates', ['Kitchenware › Disposable Items › Plastic Plates']],
+  ],
+  'Party Lights': [
+    ...PARTY_STRAYS,
+    [P('tea lights'), `${PB} › Candles`],
+    [P('seasonal indoor string lights'), 'Party Decorations › Backdrop Decorations › Party Lights', ['Electrical and Lights › Decorative Lights › String Lights']],
+    [P('pa & stage'), 'Party Decorations › Backdrop Decorations › Party Lights', ['Musical Instruments › Music Accessories & Audio › DJ Equipment']],
+  ],
+  'Birthday Candles': [
+    ...PARTY_STRAYS,
+    [P('pillar candles|jar candles|tea lights|taper candles|votive candles|floating candles|candle sets|specialty candles', 'birthday|cake'), `${PB} › Candles`],
+  ],
+  'Flower Decorations': [
+    ...PARTY_STRAYS,
+    [P('artificial flowers'), 'Party Decorations › Wedding Decorations › Flower Decorations', ['Artificial Flowers and Plants › Artificial Flowers › Decorative Flowers']],
+  ],
+  'Costume Props': [...PARTY_STRAYS, ...HAIR],
+  Streamers: [...PARTY_STRAYS, ...HAIR],
+  'Gift Bags': [...PARTY_STRAYS, [P('craft materials > gift boxes'), 'Gifts & Frames › Gift Sets & Greeting Cards › Gift Boxes']],
+};
+for (const name of ['Party Masks', 'Candles', 'Balloon Sets', 'Balloon Arches', 'Latex Balloons', 'Foil Balloons', 'Cake Toppers', 'Confetti', 'Wedding Backdrops', 'Anniversary Decorations', 'Baby Shower Decorations', 'Banners', 'Birthday Banners', 'Holi Decorations', 'Diwali Decorations', 'New Year Decorations', 'Christmas Decorations', 'Photo Booth Props']) {
+  PARTY_RULES[name] = [...PARTY_STRAYS, ...(PARTY_RULES[name] ?? [])];
+}
+for (const [name, rules] of Object.entries(PARTY_RULES)) REROUTES[name] = [...rules, ...(REROUTES[name] ?? [])];
