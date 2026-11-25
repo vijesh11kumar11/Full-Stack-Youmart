@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "2.2",
+  "description": "Deploy a YouMart version: runs /opt/youmart/server/deploy.sh <version> and nothing else.",
+  "parameters": {
+    "version": {
+      "type": "String",
+      "description": "Image tag to deploy: a git commit sha (7-40 hex characters) or 'latest'.",
+      "allowedPattern": "^([0-9a-f]{7,40}|latest)$"
+    }
+  },
+  "mainSteps": [
+    {
+      "action": "aws:runShellScript",
+      "name": "deploy",
+      "inputs": {
+        "timeoutSeconds": "1800",
+        "runCommand": ["sudo -u ubuntu /opt/youmart/server/deploy.sh {{ version }}"]
+      }
+    }
+  ]
+}

@@ -86,12 +86,15 @@ jobs:
       - name: Run deploy.sh on the server (Session Manager)
         run: |
           set -euo pipefail
+          # YouMart-Deploy is a custom Session Manager document that can only run
+          # /opt/youmart/server/deploy.sh <version> (deploy/README.md, step 9), so this role
+          # cannot run any other command on the server.
           CMD_ID=$(aws ssm send-command \
             --instance-ids "${{ vars.EC2_INSTANCE_ID }}" \
-            --document-name AWS-RunShellScript \
+            --document-name YouMart-Deploy \
             --comment "youmart deploy ${{ github.sha }}" \
             --timeout-seconds 1800 \
-            --parameters 'commands=["sudo -u ubuntu /opt/youmart/server/deploy.sh ${{ github.sha }}"]' \
+            --parameters 'version=${{ github.sha }}' \
             --query 'Command.CommandId' --output text)
           echo "command: $CMD_ID"
           for i in $(seq 1 120); do

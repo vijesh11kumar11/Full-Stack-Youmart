@@ -81,11 +81,11 @@ Retrieval after 30 days, delete after 180 days.
 
 EC2 -> Launch instance:
 - **Ubuntu Server 24.04 LTS** (Arm for m7g / x86 for m7i), type **m7g.large** (or m7i.large)
-- Storage: **100 GB gp3**, encrypted
+- Storage: **50 GB gp3**, encrypted, *Delete on termination: No* (grow it online later if needed); turn on **Termination protection**
 - IAM instance profile: `youmart-server`
 - Key pair: **none** (Session Manager is used instead)
-- Security group `youmart-web`: inbound **443 and 80 from Cloudflare's IP ranges only**
-  (https://www.cloudflare.com/ips/ - add each IPv4 and IPv6 range). **No port 22.**
+- Security group `youmart-web`: inbound **443 only**, source = a managed prefix list `cloudflare-ipv4`
+  holding Cloudflare's IPv4 ranges (https://www.cloudflare.com/ips-v4). **No port 22, no port 80.**
 
 Then: Elastic IPs -> Allocate -> Associate with the instance. Connect: EC2 -> instance ->
 Connect -> **Session Manager**.
@@ -143,8 +143,9 @@ sudo -u ubuntu docker login ghcr.io -u <github-username>   # paste the token as 
    audience `sts.amazonaws.com`.
 2. IAM role `youmart-github-deploy`, trusted by that provider, condition
    `token.actions.githubusercontent.com:sub` = `repo:vijesh11kumar11/Full-Stack-Youmart:environment:production`.
-   Permissions: `ssm:SendCommand` on the instance + `AWS-RunShellScript` document, and
-   `ssm:GetCommandInvocation`.
+   Permissions: `ssm:SendCommand` on instances tagged `Project=youmart` + the custom document
+   `YouMart-Deploy` (create it in Systems Manager -> Documents from `deploy/ssm/YouMart-Deploy.json`;
+   it can only run `deploy.sh <version>`), and `ssm:GetCommandInvocation`.
 3. Repo -> Settings -> Environments -> `production` (add yourself as required reviewer if wanted).
    Secrets: `AWS_DEPLOY_ROLE_ARN`. Variables: `EC2_INSTANCE_ID`, `SITE_URL=https://youmart.in`,
    `AWS_REGION=ap-south-1` (+ `TARGET_PLATFORM` / `BUILD_RUNNER` only for Intel).
