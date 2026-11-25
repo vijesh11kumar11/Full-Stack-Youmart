@@ -121,7 +121,11 @@ chown -R ubuntu:ubuntu /opt/youmart && chmod 600 /opt/youmart/.env /opt/youmart/
 
 ## 7. Fill in `/opt/youmart/.env`
 
-`nano /opt/youmart/.env` and replace every `CHANGE_ME` / `changeme_...`:
+Fastest: on your PC run `scripts/launch/export-secrets.ps1`, fix any placeholder business values in
+`C:\Users\vijes\youmart-launch\secrets-import.env`, paste its contents on the server into
+`/opt/youmart/secrets-import.env`, then run `bash /opt/youmart/server/fill-secrets.sh`. It generates
+every password/key below, imports the pasted values (and deletes that file), and lists anything still
+missing. By hand instead: `nano /opt/youmart/.env` and replace every `CHANGE_ME` / `changeme_...`:
 - **Passwords** (Postgres + every `*_DATABASE_URL`, Typesense key, OTP / bank hash secrets): letters
   and digits only - generate each with `openssl rand -hex 24`.
 - **JWT keys**: a NEW pair for production (command in the file's JWT comment, run with `node`).

@@ -15,6 +15,8 @@ storage/
 .env
 .env.*
 !.env.example
+# production template: placeholders only (CHANGE_ME); real values live only on the server
+!deploy/.env.production.example
 
 # OS files
 .DS_Store
